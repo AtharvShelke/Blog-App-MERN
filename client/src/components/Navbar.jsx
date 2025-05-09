@@ -14,7 +14,7 @@ function Navbar() {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await fetch('https://blog-app-mern-api.vercel.app/profile', {
+                const response = await fetch('http://localhost:3000/user/profile', {
                     method: 'GET',
                     credentials: 'include', // Ensures cookies are sent
                     
@@ -50,7 +50,7 @@ function Navbar() {
 
     const logout = async () => {
         try {
-            const response = await fetch('https://blog-app-mern-api.vercel.app/logout', {
+            const response = await fetch('http://localhost:3000/user/logout', {
                 method: 'POST',
                 credentials: 'include'
             })

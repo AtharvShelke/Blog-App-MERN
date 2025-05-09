@@ -1,35 +1,31 @@
-import express, { json } from 'express';
+import express from 'express';
 import cors from 'cors';
-import userRoutes from './routes/userRoutes.js'
-import postRoutes from './routes/postRoutes.js'
+import userRoutes from './routes/userRoutes.js';
+import postRoutes from './routes/postRoutes.js';
 import dotenv from 'dotenv';
 import connect from './db/connect.js';
 import cookieParser from 'cookie-parser';
 
 dotenv.config();
-
 connect();
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000; // Default value for PORT
 
 const app = express();
 
-app.use(express.json({limit:'50mb'}));
+// Middleware
+app.use(express.json({ limit: '50mb' }));
+app.use(cookieParser());
 
-
+// CORS Configuration
 app.use(cors({
-    origin: 'https://blog-app-mern-liard.vercel.app',
+    origin: 'http://localhost:5173',
     credentials: true,
 }));
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'https://blog-app-mern-liard.vercel.app');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
-});
 
-app.use(cookieParser())
-app.use('/', userRoutes);
+// Routes
+app.use('/user', userRoutes);  // Mount user routes under /user instead of /
 app.use('/post', postRoutes);
 
-app.listen(port, ()=>console.log(`Server started on http://localhost:${port}`));
+// Server Listener
+app.listen(port, () => console.log(`🚀 Server running on http://localhost:${port}`));

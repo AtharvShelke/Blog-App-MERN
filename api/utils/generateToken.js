@@ -1,17 +1,17 @@
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-const secret = 'asdfghjkl'
+dotenv.config();
+
+const secret = process.env.JWT_SECRET || 'default_secret'; // Use env variable
 
 const generateToken = (res, username) => {
-    const token = jwt.sign({ username }, secret, {
-        expiresIn: '1d'
-    });
+    const token = jwt.sign({ username }, secret, { expiresIn: '1d' });
 
     res.cookie('token', token, {
-        httpOnly: true, // Prevents client-side JS access
-        secure: true, // Only set for HTTPS in developement
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Secure only in production
         sameSite: 'None',
-        domain:'blog-app-mern-api.vercel.app',
         maxAge: 1000 * 60 * 60 * 24 // 1 day
     });
 
@@ -21,7 +21,7 @@ const generateToken = (res, username) => {
 const deleteToken = (res) => {
     res.clearCookie('token', {
         httpOnly: true,
-        secure:true,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'None',
     });
 

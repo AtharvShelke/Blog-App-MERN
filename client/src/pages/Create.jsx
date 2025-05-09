@@ -34,7 +34,7 @@ const Create = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
         try {
-            const response = await fetch('https://blog-app-mern-api.vercel.app/profile', {
+            const response = await fetch('http://localhost:3000/profile', {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -79,7 +79,7 @@ const Create = () => {
   const createNewPost = async (e) => {
     e.preventDefault();
     
-    const response = await fetch('https://blog-app-mern-api.vercel.app/post/create', {
+    const response = await fetch('http://localhost:3000/post/create', {
       method:'POST',
       body:JSON.stringify({title, thumbnail, summary, content, author, authorPfp}),
       headers: { 'Content-Type': 'application/json' }

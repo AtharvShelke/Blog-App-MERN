@@ -12,13 +12,14 @@ const Register = () => {
 
   const register = async (e) => {
     e.preventDefault();
-    const response = await fetch('https://blog-app-mern-api.vercel.app/register', {
+    const response = await fetch('http://localhost:3000/user/register', {
       method: 'POST',
       body: JSON.stringify({ username, email, profileImage, password, confirmPassword }),
       headers: { 'Content-Type': 'application/json' }
     })
     if (!response.ok) {
       alert('Registration Failed')
+      console.log(response)
     }
     else {
       alert('Registration Successfull')

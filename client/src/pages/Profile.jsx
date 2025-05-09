@@ -37,7 +37,7 @@ const Profile = () => {
       if (!author) return; // Wait for author to be set
       try {
         const response = await fetch(
-          `https://blog-app-mern-api.vercel.app/post/getPostByAuthor/${author}`,
+          `http://localhost:3000/post/getPostByAuthor/${author}`,
           {
             method: 'GET',
             credentials: 'include',

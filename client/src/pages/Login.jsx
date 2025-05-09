@@ -12,7 +12,7 @@ const Login = () => {
   const loginUser = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('https://blog-app-mern-api.vercel.app/login', {
+    const response = await fetch('http://localhost:3000/user/login', {
       method: 'POST',
       body: JSON.stringify({ username, password }),     //sending data to backend
       headers: { 'Content-Type': 'application/json' },
