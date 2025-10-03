@@ -1,6 +1,9 @@
 import { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -12,7 +15,7 @@ const Login = () => {
   const loginUser = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('http://localhost:3000/user/login', {
+    const response = await fetch(`${process.env.BACKEND_URL}/user/login`, {
       method: 'POST',
       body: JSON.stringify({ username, password }),     //sending data to backend
       headers: { 'Content-Type': 'application/json' },

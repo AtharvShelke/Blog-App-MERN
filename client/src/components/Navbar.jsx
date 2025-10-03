@@ -14,7 +14,7 @@ function Navbar() {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await fetch('http://localhost:3000/user/profile', {
+                const response = await fetch(`${process.env.BACKEND_URL}/user/profile`, {
                     method: 'GET',
                     credentials: 'include', // Ensures cookies are sent
                     
@@ -50,7 +50,7 @@ function Navbar() {
 
     const logout = async () => {
         try {
-            const response = await fetch('http://localhost:3000/user/logout', {
+            const response = await fetch(`${process.env.BACKEND_URL}/user/logout`, {
                 method: 'POST',
                 credentials: 'include'
             })

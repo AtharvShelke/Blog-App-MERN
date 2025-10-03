@@ -13,7 +13,7 @@ const Blog = () => {
     useEffect(() => {
         const getPost = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/post/getPost/${id}`, {
+                const response = await fetch(`${process.env.BACKEND_URL}/post/getPost/${id}`, {
                     method: 'GET'
                 });
                 if (!response.ok) {

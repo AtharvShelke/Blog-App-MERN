@@ -6,7 +6,7 @@ const PostContainer = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await fetch('http://localhost:3000/post/', {
+        const response = await fetch(`${process.env.BACKEND_URL}/post/`, {
           method: 'GET',
           credentials: 'include'
         });
