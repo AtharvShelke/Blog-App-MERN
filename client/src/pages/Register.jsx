@@ -12,7 +12,7 @@ const Register = () => {
 
   const register = async (e) => {
     e.preventDefault();
-    const response = await fetch(`${process.env.BACKEND_URL}/user/register`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/register`, {
       method: 'POST',
       body: JSON.stringify({ username, email, profileImage, password, confirmPassword }),
       headers: { 'Content-Type': 'application/json' }

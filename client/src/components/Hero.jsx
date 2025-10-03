@@ -15,8 +15,8 @@ const Hero = () => {
     
     useEffect(() => {
         const fetchLatestPost = async () => {
-            
-            const response = await fetch(`${process.env.BACKEND_URL}/post/getLatestPost`, {
+
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/post/getLatestPost`, {
                 method: 'GET'
 
             });

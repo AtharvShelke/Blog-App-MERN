@@ -13,7 +13,7 @@ const Blog = () => {
     useEffect(() => {
         const getPost = async () => {
             try {
-                const response = await fetch(`${process.env.BACKEND_URL}/post/getPost/${id}`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/post/getPost/${id}`, {
                     method: 'GET'
                 });
                 if (!response.ok) {

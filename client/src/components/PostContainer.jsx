@@ -6,7 +6,7 @@ const PostContainer = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await fetch(`${process.env.BACKEND_URL}/post/`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/post/`, {
           method: 'GET',
           credentials: 'include'
         });

@@ -34,7 +34,7 @@ const Create = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
         try {
-            const response = await fetch(`${process.env.BACKEND_URL}/profile`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/profile`, {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -79,7 +79,7 @@ const Create = () => {
   const createNewPost = async (e) => {
     e.preventDefault();
     
-    const response = await fetch(`${process.env.BACKEND_URL}/post/create`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/post/create`, {
       method:'POST',
       body:JSON.stringify({title, thumbnail, summary, content, author, authorPfp}),
       headers: { 'Content-Type': 'application/json' }

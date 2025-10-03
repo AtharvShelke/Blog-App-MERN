@@ -11,7 +11,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await fetch(`${process.env.BACKEND_URL}/profile`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/profile`, {
           method: 'GET',
           credentials: 'include'
         });
@@ -37,7 +37,7 @@ const Profile = () => {
       if (!author) return; // Wait for author to be set
       try {
         const response = await fetch(
-          `${process.env.BACKEND_URL}/post/getPostByAuthor/${author}`,
+          `${import.meta.env.VITE_BACKEND_URL}/post/getPostByAuthor/${author}`,
           {
             method: 'GET',
             credentials: 'include',
