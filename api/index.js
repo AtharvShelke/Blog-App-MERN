@@ -19,7 +19,7 @@ app.use(cookieParser());
 
 // CORS Configuration
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'https://blog-app-mern-frontend-lrsj.onrender.com',
     credentials: true,
 }));
 
