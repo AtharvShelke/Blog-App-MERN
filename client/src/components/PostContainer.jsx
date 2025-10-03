@@ -28,32 +28,37 @@ const PostContainer = () => {
     fetchPost();
 
   }, []);
-  return (
+  // PostContainer.jsx
+return (
+  <>
+    <section className="bg-gray-950 py-16 sm:py-20">
+      <div className="container px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl">
+        {/* Header */}
+        <div className="text-center mb-12 sm:mb-16">
+          <span className="inline-block px-4 py-1.5 mb-4 text-xs font-semibold tracking-wider text-cyan-400 uppercase bg-cyan-500/10 rounded-full border border-cyan-500/20">
+            Blog
+          </span>
+          
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
+            From the Blog
+          </h1>
 
-    <>
-      <section className="bg-white dark:bg-gray-950">
-        <div className="container px-6 py-10 mx-auto">
-          <div className="text-center">
-            <h1 className="text-2xl font-semibold text-gray-800 capitalize lg:text-3xl dark:text-white">From the blog</h1>
-
-            <p className="max-w-lg mx-auto mt-4 text-gray-500">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure veritatis sint autem nesciunt, laudantium
-              quia tempore delect
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-8 mt-8 lg:grid-cols-2">
-            {
-              posts.length > 0 && posts.map((post,i)=>(<Post key={post._id} {...post}/>))
-            }
-
-
-          </div>
+          <p className="max-w-2xl mx-auto text-base sm:text-lg text-gray-400 leading-relaxed">
+            Explore insights, tutorials, and stories from our community of developers and creators
+          </p>
         </div>
-      </section>
 
-    </>
-  )
+        {/* Posts Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          {posts.length > 0 && posts.map((post) => (
+            <Post key={post._id} {...post} />
+          ))}
+        </div>
+      </div>
+    </section>
+  </>
+);
+
 }
 
 export default PostContainer

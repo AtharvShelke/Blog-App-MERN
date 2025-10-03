@@ -2,63 +2,62 @@ import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken';
-import {generateToken, deleteToken} from '../utils/generateToken.js';
+import { generateToken, deleteToken } from '../utils/generateToken.js';
 
-// register user
-// POST
-// /register
+const secret = process.env.JWT_SECRET || 'asdfghjkl';
 
-const secret = 'asdfghjkl'
-
+// Register User
 const registerUser = asyncHandler(async (req, res) => {
+    const { username, email, profileImage, password, confirmPassword } = req.body;
 
-    //take the input fields from client
-    const { username, email, profileImage ,password, confirmPassword } = req.body;
-
-    //validate
+    // Validate
     if (password !== confirmPassword) {
-        res.status(400).json({message:'Passwords do not match'})
-        
+        return res.status(400).json({ message: 'Passwords do not match' });
     }
 
-    const userExists = await User.findOne({ email })
+    const userExists = await User.findOne({ email });
     if (userExists) {
-        res.status(400).json({message:'User Already Exists'})
-        
+        return res.status(400).json({ message: 'User Already Exists' });
     }
+
     try {
-        const hashedPassword = await bcrypt.hash(password, 10)
+        const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.create({
             username,
             email,
-            password: hashedPassword, 
+            password: hashedPassword,
             profileImage
         });
-        res.status(201).json({ username, email, profileImage });
+
+        // Use the generateToken function consistently
+        generateToken(res, user.username);
+
+        res.status(201).json({
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            profileImage: user.profileImage
+        });
     } catch (error) {
-        console.error('Error during user registration:', error); 
+        console.error('Error during user registration:', error);
         res.status(400).json({ message: 'User registration not successful', error: error.message });
-
     }
-
-}
-)
+});
 
 // Login User
-// POST 
-// /login
 const loginUser = asyncHandler(async (req, res) => {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
 
     if (user && (await bcrypt.compare(password, user.password))) {
-        console.log('User authenticated:', user.username); // Log user
+        console.log('User authenticated:', user.username);
+        
         generateToken(res, username); // Sets the token in a cookie
         
-        // Log the cookies in the response to verify it's set
-        console.log('Cookies sent in response:', res.get('Set-Cookie'));
+        // Verify cookie was set
+        console.log('Response headers:', res.getHeaders());
 
-        res.status(201).json({
+        res.status(200).json({
             _id: user._id,
             username: user.username,
             email: user.email,
@@ -69,27 +68,27 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 });
 
-
-
-// get user profile
-// GET
-// /profile
-
+// Get User Profile
 const profileUser = asyncHandler(async (req, res) => {
-    console.log("Headers:", req.headers); // Log headers
-    console.log("Cookies:", req.cookies); // Log cookies
+    console.log("Headers:", req.headers);
+    console.log("Cookies:", req.cookies);
 
-    const { token } = req.cookies;
-    
+    let token = req.cookies.token;
+
+    // Also check Authorization header
+    if (!token && req.headers.authorization) {
+        const authHeader = req.headers.authorization;
+        if (authHeader.startsWith('Bearer ')) {
+            token = authHeader.split(' ')[1];
+        }
+    }
+
     if (!token) {
         return res.status(401).json({ message: 'No token provided' });
     }
 
-    jwt.verify(token, secret, async (err, decoded) => {
-        if (err) {
-            return res.status(403).json({ message: 'Invalid token' });
-        }
-
+    try {
+        const decoded = jwt.verify(token, secret);
         const username = decoded.username;
         const user = await User.findOne({ username });
 
@@ -103,22 +102,21 @@ const profileUser = asyncHandler(async (req, res) => {
         } else {
             res.status(404).json({ message: 'User not found' });
         }
-    });
+    } catch (err) {
+        console.error('Token verification error:', err);
+        return res.status(403).json({ message: 'Invalid token' });
+    }
 });
 
-
-
-// logout 
-// POST
+// Logout
 const logoutUser = asyncHandler(async (req, res) => {
     try {
-        deleteToken(res); // This should clear the token
-        res.status(200).json({ message: 'Logout successful' }); // Respond to client
+        deleteToken(res);
+        res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
         console.error('Logout failed:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
-
-export { registerUser,loginUser, profileUser, logoutUser };
+export { registerUser, loginUser, profileUser, logoutUser };

@@ -9,22 +9,27 @@ import cookieParser from 'cookie-parser';
 dotenv.config();
 connect();
 
-const port = process.env.PORT || 3000; // Default value for PORT
-
+const port = process.env.PORT || 3000;
 const app = express();
 
-// Middleware
-app.use(express.json({ limit: '50mb' }));
-app.use(cookieParser());
+// Trust proxy (important for some environments)
+app.set('trust proxy', 1);
 
-// CORS Configuration
+// Middleware - ORDER MATTERS!
+app.use(cookieParser()); // Parse cookies BEFORE CORS
+app.use(express.json({ limit: '50mb' }));
+
+// CORS Configuration - MUST be after cookieParser
 app.use(cors({
-    origin: 'https://blog-app-mern-frontend-lrsj.onrender.com',
+    origin: 'https://blog-app-mern-frontend-lrsj.onrender.com', // Your frontend URL
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Set-Cookie']
 }));
 
 // Routes
-app.use('/user', userRoutes);  // Mount user routes under /user instead of /
+app.use('/user', userRoutes);
 app.use('/post', postRoutes);
 
 // Server Listener

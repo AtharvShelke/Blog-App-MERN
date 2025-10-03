@@ -29,15 +29,24 @@ const Sidebar = () => {
 
   }, []);
   return (
-    <>
-
-      <div className="mt-8 lg:w-1/4 lg:mt-0 lg:px-6">
-        {posts.length > 0 && posts.slice(0, 4).map((post, i) => (
-          <SidebarPost key={i + 1} {...post} /> // Add 1 to the key to match the original index
-        ))}
-
+   // Sidebar.jsx
+<>
+  <div className="lg:col-span-1">
+    <div className="sticky top-24">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-bold text-white">Latest Posts</h2>
+        <div className="h-px flex-1 bg-gradient-to-r from-cyan-500/20 to-transparent ml-4"></div>
       </div>
-    </>
+      
+      <div className="space-y-4">
+        {posts.length > 0 && posts.slice(0, 4).map((post, i) => (
+          <SidebarPost key={post._id} {...post} />
+        ))}
+      </div>
+    </div>
+  </div>
+</>
+
   )
 }
 

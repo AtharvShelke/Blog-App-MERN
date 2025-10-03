@@ -12,40 +12,38 @@ function Navbar() {
     const [pfp, setPfp] = useState(null)
     const navigate = useNavigate();
     useEffect(() => {
-        const fetchUserInfo = async () => {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/profile`, {
-                    method: 'GET',
-                    credentials: 'include', // Ensures cookies are sent
-                    
-                });
-    
-                if (!response.ok) {
-                    // Add more detailed logging for the response
-                    const errorMessage = await response.text();
-                    console.error('Error fetching user information:', errorMessage);
-                    return;
-                }
-    
-                const userInfo = await response.json();
-                // Assuming setUsername, setEmail, and setPfp are defined as state setters
-                setUsername(userInfo.username);
-                setEmail(userInfo.email);
-                setPfp(userInfo.profileImage);
-                localStorage.setItem('token')
-            } catch (error) {
-                console.error('Network or Server Error:', error);
+    const fetchUserInfo = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/profile`, {
+                method: 'GET',
+                credentials: 'include', // Ensures cookies are sent
+            });
+
+            if (!response.ok) {
+                console.error('Error fetching user information');
+                // Don't set user info if not logged in
+                setUsername(null);
+                setEmail(null);
+                setPfp(null);
+                return;
             }
-        };
-    
-        fetchUserInfo();
-    
-        // Cleanup function to cancel the request if component unmounts
-        return () => {
-            // Abort fetch if needed (optional, only necessary if you add aborting logic)
-        };
-    }, []); // Empty array as dependencies to run once after mounting
-    
+
+            const userInfo = await response.json();
+            setUsername(userInfo.username);
+            setEmail(userInfo.email);
+            setPfp(userInfo.profileImage);
+        } catch (error) {
+            console.error('Network or Server Error:', error);
+            // Reset user info on error
+            setUsername(null);
+            setEmail(null);
+            setPfp(null);
+        }
+    };
+
+    fetchUserInfo();
+}, []); // Runs once on mount
+
     
 
     const logout = async () => {
@@ -67,128 +65,168 @@ function Navbar() {
             alert('Logout failed. Please try again.');
         }
     }
-    return (
-        <>
-            <header className="text-gray-400 bg-gray-950 body-font border-b border-gray-600">
-                <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-                    <Link to='/'>
-                        <p className="flex title-font font-medium items-center text-white mb-4 md:mb-0 cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-10 h-10 text-white p-2 bg-gray-700 rounded-full" viewBox="0 0 24 24">
-                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                            </svg>
-
-                            <span className="ml-3 text-xl">Blog App</span>
-                        </p>
-                    </Link>
-                    <nav className="md:ml-auto flex flex-wrap items-center text-base justify-center">
-                        {username ? (
-                            <>
-
-                                <div className="relative inline-block">
-                                    {/* Dropdown toggle button */}
-                                    <button
-                                        onClick={() => setIsOpen(!isOpen)}
-                                        className="relative z-10 flex items-center p-2 text-sm text-gray-600 bg-white border border-transparent rounded-md focus:border-blue-500 focus:ring-opacity-40 dark:focus:ring-opacity-40 focus:ring-blue-300 dark:focus:ring-blue-400 focus:ring dark:text-white dark:bg-gray-800 focus:outline-none"
-                                    >
-                                        <span className="mx-1">{username}</span>
-                                        <svg className="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M12 15.713L18.01 9.70299L16.597 8.28799L12 12.888L7.40399 8.28799L5.98999 9.70199L12 15.713Z"
-                                                fill="currentColor"
-                                            />
-                                        </svg>
-                                    </button>
-
-                                    {/* Dropdown menu */}
-                                    {isOpen && (
-                                        <div
-                                            className="absolute right-0 z-20 w-56 py-2 mt-2 overflow-hidden origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
-                                            onClick={() => setIsOpen(false)}
-                                        >
-                                            <Link
-                                                to='/profile'
-                                                className="flex items-center p-3 -mt-2 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
-                                            >
-                                                <img
-                                                    className="flex-shrink-0 object-cover mx-1 rounded-full w-9 h-9"
-                                                    src={pfp}
-                                                    alt="avatar"
-                                                />
-                                                <div className="mx-1">
-                                                    <h1 className="text-sm font-semibold text-gray-700 dark:text-gray-200">{username}</h1>
-                                                    <p className="text-sm text-gray-500 dark:text-gray-400">{email}</p>
-                                                </div>
-                                            </Link>
-
-                                            <hr className="border-gray-200 dark:border-gray-700" />
-                                            <Link to='/create'>
-                                                <p
-
-                                                    className="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
-                                                >
-                                                    Create Post
-                                                </p>
-                                            </Link>
-                                            <p className="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white" onClick={() => {
-                                                setShowModal(true)
-                                            }}>Logout</p>
-
-                                        </div>
-                                    )}
-                                </div>
-
-
-                            </>
-
-                        ) : (
-                            <>
-                                <Link to='/login'>
-                                    <p className="mr-5 hover:text-white cursor-pointer">Login</p>
-                                </Link>
-                                <Link to='/register'>
-                                    <p className="mr-5 hover:text-white cursor-pointer">Register</p>
-                                </Link>
-                            </>
-                        )}
-
-
-
-
-                    </nav>
-
+    // Navbar.jsx
+return (
+  <>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-gray-950/80 backdrop-blur-xl border-b border-gray-800/50">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <div className="flex items-center justify-between h-20">
+          
+          {/* Logo */}
+          <Link to="/">
+            <div className="flex items-center space-x-3 group cursor-pointer">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl blur-md opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+                <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 p-2.5 rounded-xl ring-1 ring-gray-700 group-hover:ring-cyan-500/50 transition-all duration-300">
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth="2" 
+                    className="w-6 h-6 text-cyan-400" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                  </svg>
                 </div>
-                {showModal ? (
-                    <>
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                            <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
-                                <h2 className="text-xl font-semibold mb-4 text-gray-900">Logout</h2>
-                                <p className="mb-6">Are you sure you want to log out?</p>
-                                <div className="flex justify-end">
-                                    <button
-                                        onClick={() => { setShowModal(false) }}
-                                        className="mr-4 px-4 py-2 bg-gray-300 rounded-md text-gray-700 hover:bg-gray-400"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            logout();
-                                            setShowModal(false)
-                                        }}
-                                        className="px-4 py-2 bg-red-600 rounded-md text-white hover:bg-red-700"
-                                    >
-                                        Logout
-                                    </button>
-                                </div>
-                            </div>
+              </div>
+              
+              <span className="text-xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+                Blog<span className="text-cyan-400">Hub</span>
+              </span>
+            </div>
+          </Link>
+
+          {/* Navigation */}
+          <nav className="flex items-center space-x-4">
+            {username ? (
+              <>
+                {/* User Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 hover:border-cyan-500/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                  >
+                    <span className="text-sm font-medium text-gray-200">{username}</span>
+                    <svg 
+                      className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M12 15.713L18.01 9.70299L16.597 8.28799L12 12.888L7.40399 8.28799L5.98999 9.70199L12 15.713Z" fill="currentColor" />
+                    </svg>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {isOpen && (
+                    <div
+                      className="absolute right-0 mt-3 w-64 origin-top-right bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl overflow-hidden"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {/* User Profile */}
+                      <Link to="/profile">
+                        <div className="flex items-center space-x-3 p-4 hover:bg-gray-800/50 transition-colors duration-200">
+                          <div className="relative">
+                            <img
+                              className="w-12 h-12 rounded-full object-cover ring-2 ring-cyan-500/20"
+                              src={pfp}
+                              alt="avatar"
+                            />
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-900"></div>
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-sm font-semibold text-white truncate">{username}</h3>
+                            <p className="text-xs text-gray-400 truncate">{email}</p>
+                          </div>
                         </div>
-                    </>
-                ) : null}
-            </header>
+                      </Link>
 
-        </>
+                      <div className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
 
-    );
+                      {/* Menu Items */}
+                      <Link to="/create">
+                        <button className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-300 hover:bg-gray-800/50 hover:text-white transition-colors duration-200">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                          <span>Create Post</span>
+                        </button>
+                      </Link>
+
+                      <button 
+                        className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors duration-200"
+                        onClick={() => setShowModal(true)}
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <button className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200">
+                    Login
+                  </button>
+                </Link>
+                <Link to="/register">
+                  <button className="px-6 py-2 text-sm font-semibold text-white bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300">
+                    Register
+                  </button>
+                </Link>
+              </>
+            )}
+          </nav>
+        </div>
+      </div>
+
+      {/* Logout Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-950 border border-gray-800 p-8 rounded-2xl shadow-2xl max-w-md w-full transform transition-all">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="p-3 bg-red-500/10 rounded-xl">
+                <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-white">Confirm Logout</h2>
+            </div>
+            
+            <p className="text-gray-400 mb-8">Are you sure you want to log out of your account?</p>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowModal(false)}
+                className="flex-1 px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-xl transition-colors duration-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  logout();
+                  setShowModal(false);
+                }}
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-red-500/25 transition-all duration-200"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </header>
+  </>
+);
+
 }
 
 export default Navbar;
